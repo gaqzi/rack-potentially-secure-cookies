@@ -5,10 +5,10 @@ module Rack
     def initialize(app, cookies)
       @app = app
       @configured_cookies = cookies.size
-      @cookies = "^((#{cookies.join(')|(')}))".freeze
-      @cookies_regex = /#{@cookies}/
-      @cookies_with_secure = /#{@cookies}.*[Ss]ecure/
-      @cookies_without_secure = /(#{@cookies}(?!.*[Ss]ecure).*)/
+      _cookies = "^((#{cookies.join(')|(')}))".freeze
+      @cookies_regex = /#{_cookies}/
+      @cookies_with_secure = /#{_cookies}.*[Ss]ecure/
+      @cookies_without_secure = /(#{_cookies}(?!.*[Ss]ecure).*)/
       @secure = /; [Ss]ecure/
     end
 
