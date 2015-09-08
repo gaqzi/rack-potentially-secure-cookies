@@ -22,7 +22,11 @@ module Rack
         if request.ssl?
           if missing_secure_flag > 0
             headers['Set-Cookie'] = headers['Set-Cookie'].split("\n").map do |cookie|
-              cookie =~ @cookies_with_secure ? cookie : "#{cookie}; Secure"
+              if cookie =~ @cookies_regex && !(cookie =~ @cookies_with_secure)
+                "#{cookie}; Secure"
+              else
+                cookie
+              end
             end.join("\n")
           end
         else

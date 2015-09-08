@@ -30,6 +30,24 @@ describe Rack::PotentiallySecureCookies do
           expect(response.header['Set-Cookie'].scan(/[Ss]ecure/).size).to eq(2)
         end
       end
+
+      context 'one of the cookies have the secure flag set' do
+        let!(:cookie_something_else) { Rack::Utils.set_cookie_header!(app_headers, 'something_else', {value: 'm000', http_only: true, secure: true}) }
+        let(:cookies_to_force_ssl) { ['_session_id', 'something_else'] }
+
+        it 'sets the secure flag for all' do
+          expect(response.header['Set-Cookie'].scan(/[Ss]ecure/).size).to eq(cookies_to_force_ssl.size)
+        end
+      end
+
+      context 'there is a cookie that should not have the secure flag set, and a configured cookie is missing' do
+        let(:cookies_to_force_ssl) { ['_session_id', 'something_elsez'] }
+
+        it 'sets the secure flag for the configured cookie' do
+          puts response.header['Set-Cookie']
+          expect(response.header['Set-Cookie'].scan(/[Ss]ecure/).size).to eq(1)
+        end
+      end
     end
   end
 
