@@ -4,20 +4,31 @@ module Rack
 
     def initialize(app, cookies)
       @app = app
-      @cookies = "(#{cookies.join('|')})"
+      @configured_cookies = cookies.size
+      @cookies = "^((#{cookies.join(')|(')}))".freeze
+      @cookies_regex = /#{@cookies}/
+      @cookies_with_secure = /#{@cookies}.*[Ss]ecure/
+      @cookies_without_secure = /(#{@cookies}(?!.*[Ss]ecure).*)/
+      @secure = /; [Ss]ecure/
     end
 
     def call(env)
       status, headers, body = @app.call(env)
 
-      if headers['Set-Cookie'] && headers['Set-Cookie'] =~ /^#{@cookies}/
+      if headers['Set-Cookie'] && @cookies_regex.match(headers['Set-Cookie'])
         request = Rack::Request.new(env)
-        has_secure_flag = (headers['Set-Cookie'] =~ /^#{@cookies}.*?[Ss]ecure/)
+        missing_secure_flag = headers['Set-Cookie'].scan(@cookies_without_secure).size
 
-        if request.ssl? && !has_secure_flag
-          headers['Set-Cookie'].gsub!(/^(#{@cookies}.*)$/, '\1; Secure')
-        elsif has_secure_flag
-          headers['Set-Cookie'].gsub!(/^(#{@cookies}.*)$/) { |m| m.sub!(/; [Ss]ecure/, '') }
+        if request.ssl?
+          if missing_secure_flag > 0
+            headers['Set-Cookie'] = headers['Set-Cookie'].split("\n").map do |cookie|
+              cookie =~ @cookies_with_secure ? cookie : "#{cookie}; Secure"
+            end.join("\n")
+          end
+        else
+          if @configured_cookies > missing_secure_flag
+            headers['Set-Cookie'].gsub!(@cookies_with_secure) { |m| m.sub!(@secure, '') }
+          end
         end
       end
 

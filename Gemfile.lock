@@ -7,6 +7,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    benchmark-ips (2.3.0)
     diff-lcs (1.2.5)
     rack (1.6.4)
     rack-test (0.6.3)
@@ -29,6 +30,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  benchmark-ips
   rack-potentially-secure-cookies!
   rack-test
   rspec
