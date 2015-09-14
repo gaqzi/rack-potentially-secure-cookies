@@ -26,7 +26,7 @@ An example of this is:
 This is available as a gem so just add to your `Gemfile`:
 
 ```ruby
-gem 'rack-potentially-secure-cookies'
+gem 'rack-potentially-secure-cookies', require: 'rack/potentially_secure_cookies'
 ```
 
 In your `environment.rb` (or maybe `environments/production.rb`) add the middleware:
