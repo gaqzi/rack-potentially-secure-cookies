@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rack-potentially-secure-cookies (1.0.0)
+    rack-potentially-secure-cookies (1.0.1)
       rack
 
 GEM

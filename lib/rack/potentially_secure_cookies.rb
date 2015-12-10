@@ -1,6 +1,6 @@
 module Rack
   class PotentiallySecureCookies
-    VERSION = '1.0.0'
+    VERSION = '1.0.1'
 
     def initialize(app, cookies)
       @app = app
